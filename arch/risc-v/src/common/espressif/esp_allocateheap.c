@@ -37,6 +37,10 @@
 #include "riscv_internal.h"
 #include "rom/rom_layout.h"
 
+#ifdef CONFIG_ESP32P4_SPIRAM
+#  include "esp_spiram.h"
+#endif
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -115,6 +119,21 @@ void riscv_addregion(void)
   if (region_size > 0)
     {
       kumm_addregion(_sram_high_heap_start, region_size);
+    }
+#endif
+
+#if defined(CONFIG_ESP32P4_SPIRAM)
+  /* Add PSRAM as an additional heap region.
+   * Only add if cache mapping was successful (vaddr_start != 0).
+   */
+
+  uintptr_t psram_start = esp_spiram_allocable_vaddr_start();
+  uintptr_t psram_end = esp_spiram_allocable_vaddr_end();
+
+  if (psram_end > psram_start && psram_start != 0)
+    {
+      size_t psram_size = psram_end - psram_start;
+      kumm_addregion((void *)psram_start, psram_size);
     }
 #endif
 }

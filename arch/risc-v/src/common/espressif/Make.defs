@@ -191,6 +191,12 @@ ifeq ($(CONFIG_PM),y)
 	LDFLAGS += -u esp_timer_init_include_func
 endif
 
+ifeq ($(CONFIG_ESP32P4_SPIRAM),y)
+	CHIP_CSRCS += esp_psram.c
+	CHIP_CSRCS += esp_spiram.c
+	CHIP_CSRCS += chip$(DELIM)$(ESP_HAL_3RDPARTY_REPO)$(DELIM)components$(DELIM)esp_hw_support$(DELIM)mspi$(DELIM)mspi_timing_tuning$(DELIM)port$(DELIM)$(CHIP_SERIES)$(DELIM)mspi_timing_config.c
+endif
+
 # Required for initialization hooks on common code
 
 LDFLAGS += -u esp_system_include_startup_funcs

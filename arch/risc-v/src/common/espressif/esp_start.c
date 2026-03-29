@@ -80,6 +80,10 @@
 #  include "hal/apm_hal.h"
 #endif
 
+#ifdef CONFIG_ESP32P4_SPIRAM
+#  include "esp_spiram.h"
+#endif
+
 /****************************************************************************
  * Pre-processor Definitions
  ****************************************************************************/
@@ -507,6 +511,7 @@ void __esp_start(void)
 
 #if defined(CONFIG_ESPRESSIF_BOOTLOADER_MCUBOOT) || \
     defined(CONFIG_ESPRESSIF_SIMPLE_BOOT)
+
   size_t partition_offset = PRIMARY_SLOT_OFFSET;
   uint32_t app_irom_start = partition_offset + (uint32_t)_image_irom_lma;
   uint32_t app_irom_size  = (uint32_t)_image_irom_size;
@@ -556,6 +561,8 @@ void __esp_start(void)
 
   esp_mmu_map_init();
 
+  esp_mmu_map_init();
+
   /* Configures the CPU clock, RTC slow and fast clocks, and performs
    * RTC slow clock calibration.
    */
@@ -565,6 +572,22 @@ void __esp_start(void)
   /* Disable clock of unused peripherals */
 
   esp_perip_clk_init();
+
+#ifdef CONFIG_ESP32P4_SPIRAM
+  if (esp_spiram_init() != OK)
+    {
+#  ifdef CONFIG_ESP32P4_SPIRAM_IGNORE_NOTFOUND
+      ets_printf("SPIRAM init failed, continuing\n");
+#  else
+      ets_printf("SPIRAM init failed, aborting\n");
+      while (true);
+#  endif
+    }
+  else if (esp_spiram_init_cache() != OK)
+    {
+      ets_printf("SPIRAM cache init failed\n");
+    }
+#endif /* CONFIG_ESP32P4_SPIRAM */
 
 #ifdef CONFIG_ESPRESSIF_BROWNOUT_DET
   /* Initialize hardware brownout check and reset */
