@@ -108,6 +108,9 @@ config ESP32P4_SPIRAM_MODE_QUAD
 config ESP32P4_SPIRAM_MODE_OCT
 	bool "Octal Mode PSRAM"
 
+config ESP32P4_SPIRAM_MODE_HEX
+	bool "HEX DDR Mode PSRAM (16-line)"
+
 endchoice # ESP32P4_SPIRAM_MODE
 
 choice ESP32P4_SPIRAM_SPEED
@@ -119,6 +122,9 @@ config ESP32P4_SPIRAM_SPEED_40M
 
 config ESP32P4_SPIRAM_SPEED_80M
 	bool "80MHz clock speed"
+
+config ESP32P4_SPIRAM_SPEED_200M
+	bool "200MHz clock speed"
 
 config ESP32P4_SPIRAM_SPEED_200M
 	bool "200MHz clock speed"
